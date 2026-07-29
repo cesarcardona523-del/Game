@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>☕ Maxi Barista · Juego (Beta) · César Cardona</title>
+  <meta name="description" content="Maxi Barista — simulador de barista. Prepara bebidas reales, atiende clientes y haz crecer tu cafetería." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="../favicon.ico" type="image/x-icon" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self' https://arpzkclltxguvixxfzej.supabase.co;">
+  <meta name="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/game.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+
+  <!-- ═══ SPRITE DE ÍCONOS: un solo lugar para todos los símbolos SVG del juego ═══ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="ing-espresso" viewBox="0 0 48 48">
+        <path d="M14 18 H34 L32 34 Q31.5 38 27 38 H21 Q16.5 38 16 34 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M34 21 Q41 21 41 26 Q41 30 35 30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        <path d="M16 18 Q24 14 32 18" fill="none" stroke="currentColor" stroke-width="2.2" />
+      </symbol>
+
+      <symbol id="ing-agua" viewBox="0 0 48 48">
+        <path d="M24 10 Q34 24 34 31 Q34 40 24 40 Q14 40 14 31 Q14 24 24 10Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+      </symbol>
+
+      <symbol id="ing-leche" viewBox="0 0 48 48">
+        <path d="M18 10 H30 V16 L33 22 V38 Q33 40 31 40 H17 Q15 40 15 38 V22 L18 16 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M15 26 H33" stroke="currentColor" stroke-width="1.6" />
+      </symbol>
+
+      <symbol id="ing-leche-caliente" viewBox="0 0 48 48">
+        <path d="M14 20 H32 V32 Q32 39 23 39 Q14 39 14 32 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M32 23 Q39 23 39 28 Q39 32 33 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M19 15 Q17 12 19 9 M25 15 Q23 12 25 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </symbol>
+
+      <symbol id="ing-leche-fria" viewBox="0 0 48 48">
+        <path d="M17 12 H31 V34 Q31 39 24 39 Q17 39 17 34 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M14 16 L18 12 M20 18 L24 14 M26 20 L30 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
+
+      <symbol id="ing-leche-espumada" viewBox="0 0 48 48">
+        <path d="M15 20 H31 V32 Q31 39 23 39 Q15 39 15 32 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M17 20 Q19 15 23 18 Q27 21 29 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </symbol>
+
+      <symbol id="ing-espuma" viewBox="0 0 48 48">
+        <path d="M13 26 Q10 20 15 18 Q15 12 22 13 Q26 8 32 13 Q38 13 37 20 Q41 23 37 28 Q38 34 31 33 Q28 38 22 34 Q15 36 14 30 Q10 30 13 26Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      </symbol>
+
+      <symbol id="ing-jarabe" viewBox="0 0 48 48">
+        <path d="M20 8 H28 V14 L31 18 V38 Q31 40 29 40 H19 Q17 40 17 38 V18 L20 14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M17 28 Q24 25 31 28" stroke="currentColor" stroke-width="1.6" fill="none" />
+      </symbol>
+
+      <symbol id="ing-canela" viewBox="0 0 48 48">
+        <rect x="14" y="20" width="20" height="6" rx="3" transform="rotate(-18 24 23)" fill="none" stroke="currentColor" stroke-width="2" />
+        <rect x="14" y="26" width="20" height="6" rx="3" transform="rotate(18 24 29)" fill="none" stroke="currentColor" stroke-width="2" />
+      </symbol>
+
+      <symbol id="ing-miel" viewBox="0 0 48 48">
+        <path d="M24 10 L32 15 V27 L24 33 L16 27 V15 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M24 33 Q22 38 24 41 Q26 38 24 33Z" fill="none" stroke="currentColor" stroke-width="1.8" />
+      </symbol>
+
+      <symbol id="ing-condensada" viewBox="0 0 48 48">
+        <rect x="16" y="12" width="16" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="2.2" />
+        <rect x="18" y="8" width="12" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="2" />
+        <path d="M16 22 H32" stroke="currentColor" stroke-width="1.6" />
+      </symbol>
+
+      <symbol id="ing-helado" viewBox="0 0 48 48">
+        <circle cx="24" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="2.2" />
+        <path d="M18 22 L24 38 L30 22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+      </symbol>
+
+      <symbol id="ing-merengue" viewBox="0 0 48 48">
+        <path d="M15 34 Q13 24 20 22 Q19 16 25 17 Q27 12 32 16 Q37 17 35 23 Q39 26 34 32 Q35 36 30 36 H18 Q14 37 15 34Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+      </symbol>
+
+      <symbol id="ing-hielo" viewBox="0 0 48 48">
+        <rect x="13" y="13" width="15" height="15" rx="2" transform="rotate(-8 20 20)" fill="none" stroke="currentColor" stroke-width="2.2" />
+        <rect x="22" y="22" width="15" height="15" rx="2" transform="rotate(-8 29 29)" fill="none" stroke="currentColor" stroke-width="2.2" />
+      </symbol>
+
+      <!-- Cafetera moderna — inspirada en la referencia que compartió el
+           usuario (cuerpo blanco, tapa azul redondeada, pantalla, tanque de
+           agua lateral); a color en vez del ícono de línea anterior. -->
+      <symbol id="maquina-icono" viewBox="0 0 100 118">
+        <path d="M14 30 Q12 24 15 19" fill="none" stroke="#EDE0C8" stroke-width="2.6" stroke-linecap="round" opacity=".55" />
+        <path d="M22 26 Q18 18 22 10" fill="none" stroke="#EDE0C8" stroke-width="2.6" stroke-linecap="round" opacity=".4" />
+        <path d="M25 16 Q40 4 66 12 Q76 15 76 26 L76 30 Q76 34 70 34 L30 34 Q24 34 24 28 Z" fill="#3E6FA6" />
+        <path d="M30 14 Q46 6 64 12" fill="none" stroke="#6E9BCB" stroke-width="2.4" stroke-linecap="round" />
+        <rect x="42" y="6" width="16" height="7" rx="3.5" fill="#F3EDE0" />
+        <rect x="18" y="32" width="64" height="38" rx="12" fill="#F3EDE0" />
+        <rect x="18" y="32" width="64" height="38" rx="12" fill="none" stroke="#D9CBB0" stroke-width="1.4" />
+        <rect x="30" y="42" width="24" height="14" rx="3" fill="#2E3A4E" />
+        <rect x="33" y="45" width="18" height="8" rx="1.5" fill="#6E9BCB" opacity=".55" />
+        <circle cx="64" cy="45" r="4.5" fill="#EDE0C8" />
+        <rect x="58" y="55" width="18" height="9" rx="4.5" fill="#3E6FA6" />
+        <text x="67" y="61.5" font-family="Segoe UI, sans-serif" font-size="6.2" font-weight="700" fill="#F3EDE0" text-anchor="middle">cute</text>
+        <rect x="82" y="38" width="13" height="30" rx="6" fill="#3E6FA6" opacity=".3" stroke="#3E6FA6" stroke-width="1.6" />
+        <rect x="86" y="33" width="6" height="6" rx="2" fill="#3E6FA6" />
+        <path d="M87 46 V60" stroke="#3E6FA6" stroke-width="1.6" stroke-linecap="round" opacity=".7" />
+        <path d="M28 70 L34 96 Q35 100 40 100 L60 100 Q65 100 66 96 L72 70 Z" fill="none" stroke="#2E3A4E" stroke-width="2.2" stroke-linejoin="round" />
+        <path d="M31 76 L69 76 L65 94 Q64.3 97 61 97 L39 97 Q35.7 97 35 94 Z" fill="#3B2417" />
+        <path d="M33 81 L67 81" stroke="#5C3A21" stroke-width="1.2" opacity=".6" />
+        <path d="M28 78 Q18 78 18 87 Q18 95 28 93" fill="none" stroke="#2E3A4E" stroke-width="2.4" stroke-linecap="round" />
+        <rect x="24" y="103" width="52" height="7" rx="3.5" fill="#2E3A4E" />
+      </symbol>
+
+      <!-- Clientes: 6 bustos en el mismo estilo vectorial plano que Maxi
+           (círculos para piel/pelo, cachetes sonrojados, ojos con brillo),
+           variando pelo/piel/color de camiseta para que la fila se sienta
+           poblada por gente distinta y no solo iniciales sobre un círculo. -->
+      <symbol id="cliente-1" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#E2603E" />
+        <circle cx="32" cy="28" r="18" fill="#E8B589" />
+        <g fill="#5C3A21">
+          <circle cx="18" cy="18" r="8" /><circle cx="26" cy="11" r="9" />
+          <circle cx="38" cy="11" r="9" /><circle cx="46" cy="18" r="8" />
+          <circle cx="32" cy="9" r="9" /><circle cx="21" cy="27" r="6" />
+          <circle cx="43" cy="27" r="6" />
+        </g>
+        <circle cx="25" cy="30" r="3" fill="#241A12" /><circle cx="39" cy="30" r="3" fill="#241A12" />
+        <circle cx="24" cy="29" r="1" fill="#fff" /><circle cx="38" cy="29" r="1" fill="#fff" />
+        <path d="M25 38 Q32 43 39 38" fill="none" stroke="#4A2C1A" stroke-width="2" stroke-linecap="round" />
+        <ellipse cx="20" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".3" /><ellipse cx="44" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".3" />
+      </symbol>
+
+      <symbol id="cliente-2" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#3E6FA6" />
+        <circle cx="32" cy="28" r="18" fill="#F3D2B3" />
+        <path d="M12 24 Q12 4 32 4 Q52 4 52 24 Q52 16 46 15 Q46 22 40 17 Q40 23 32 18 Q32 24 24 18 Q24 23 18 17 Q18 22 12 24Z" fill="#241A12" />
+        <circle cx="25" cy="30" r="3" fill="#241A12" /><circle cx="39" cy="30" r="3" fill="#241A12" />
+        <circle cx="24" cy="29" r="1" fill="#fff" /><circle cx="38" cy="29" r="1" fill="#fff" />
+        <path d="M25 38 Q32 42 39 38" fill="none" stroke="#8A5A38" stroke-width="2" stroke-linecap="round" />
+        <ellipse cx="20" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".25" /><ellipse cx="44" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".25" />
+      </symbol>
+
+      <symbol id="cliente-3" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#C9A227" />
+        <circle cx="32" cy="30" r="17" fill="#8B5A3C" />
+        <circle cx="32" cy="18" r="22" fill="#241A12" />
+        <circle cx="32" cy="30" r="15.5" fill="#8B5A3C" />
+        <circle cx="26" cy="31" r="3" fill="#1A0F08" /><circle cx="40" cy="31" r="3" fill="#1A0F08" />
+        <circle cx="25" cy="30" r="1" fill="#fff" /><circle cx="39" cy="30" r="1" fill="#fff" />
+        <path d="M26 39 Q33 44 40 39" fill="none" stroke="#2C1810" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+
+      <symbol id="cliente-4" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#7B5EA6" />
+        <path d="M46 22 Q52 30 48 42 L52 46 L44 46 Q46 40 42 34Z" fill="#E4C55A" />
+        <circle cx="32" cy="28" r="18" fill="#F3D2B3" />
+        <path d="M12 22 Q14 4 32 4 Q50 4 50 22 Q50 12 32 10 Q14 12 14 22Z" fill="#E4C55A" />
+        <circle cx="25" cy="30" r="3" fill="#241A12" /><circle cx="39" cy="30" r="3" fill="#241A12" />
+        <circle cx="24" cy="29" r="1" fill="#fff" /><circle cx="38" cy="29" r="1" fill="#fff" />
+        <path d="M25 38 Q32 43 39 38" fill="none" stroke="#8A5A38" stroke-width="2" stroke-linecap="round" />
+        <ellipse cx="20" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".25" /><ellipse cx="44" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".25" />
+      </symbol>
+
+      <symbol id="cliente-5" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#3C8A82" />
+        <circle cx="32" cy="28" r="18" fill="#F6D9B8" />
+        <path d="M13 22 Q15 6 32 6 Q49 6 51 22 Q46 14 32 14 Q18 14 13 22Z" fill="#C1602C" />
+        <path d="M13 20 Q10 26 14 30" fill="none" stroke="#C1602C" stroke-width="5" stroke-linecap="round" />
+        <path d="M51 20 Q54 26 50 30" fill="none" stroke="#C1602C" stroke-width="5" stroke-linecap="round" />
+        <circle cx="25" cy="30" r="3" fill="#241A12" /><circle cx="39" cy="30" r="3" fill="#241A12" />
+        <circle cx="24" cy="29" r="1" fill="#fff" /><circle cx="38" cy="29" r="1" fill="#fff" />
+        <g fill="#B4763C" opacity=".55">
+          <circle cx="21" cy="34" r="0.9" /><circle cx="24" cy="36" r="0.9" /><circle cx="27" cy="34.5" r="0.9" />
+          <circle cx="37" cy="34.5" r="0.9" /><circle cx="40" cy="36" r="0.9" /><circle cx="43" cy="34" r="0.9" />
+        </g>
+        <path d="M25 39 Q32 43 39 39" fill="none" stroke="#8A5A38" stroke-width="2" stroke-linecap="round" />
+      </symbol>
+
+      <symbol id="cliente-6" viewBox="0 0 64 64">
+        <path d="M8 64 Q8 46 32 46 Q56 46 56 64Z" fill="#2E3A4E" />
+        <circle cx="32" cy="28" r="18" fill="#C68642" />
+        <path d="M13 22 Q12 6 32 6 Q52 6 51 22 Q52 12 32 11 Q12 12 13 22Z" fill="#1A120C" />
+        <circle cx="25" cy="30" r="3" fill="#1A0F08" /><circle cx="39" cy="30" r="3" fill="#1A0F08" />
+        <circle cx="24" cy="29" r="1" fill="#fff" /><circle cx="38" cy="29" r="1" fill="#fff" />
+        <path d="M25 38 Q32 43 39 38" fill="none" stroke="#5C3A21" stroke-width="2" stroke-linecap="round" />
+        <ellipse cx="20" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".2" /><ellipse cx="44" cy="34" rx="4" ry="2.4" fill="#E2603E" opacity=".2" />
+      </symbol>
+
+      <!-- Mascota "Maxi" — inspirada en el personaje que compartió el usuario
+           (pelo rizado castaño, piel canela, camiseta raglán blanca/azul,
+           jeans, tenis azules); delantal agregado para el rol de barista. -->
+      <symbol id="mascota-maxi" viewBox="0 0 240 300">
+        <ellipse cx="120" cy="288" rx="55" ry="9" fill="rgba(0,0,0,.25)" />
+        <rect x="92" y="196" width="24" height="70" rx="10" fill="#2E3A4E" />
+        <rect x="124" y="196" width="24" height="70" rx="10" fill="#2E3A4E" />
+        <path d="M104 196 V260 M136 196 V260" stroke="#1E2733" stroke-width="2" />
+        <path d="M86 258 h34 q6 0 6 8 t-10 8 h-34 q-6 0 -2 -12 Z" fill="#3E6FA6" />
+        <path d="M86 266 h30" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+        <path d="M118 258 h34 q6 0 6 8 t-10 8 h-34 q-6 0 -2 -12 Z" fill="#3E6FA6" />
+        <path d="M118 266 h30" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+        <rect x="60" y="150" width="22" height="60" rx="11" fill="#E8B589" />
+        <rect x="158" y="150" width="22" height="60" rx="11" fill="#E8B589" />
+        <circle cx="71" cy="212" r="12" fill="#E8B589" />
+        <circle cx="169" cy="212" r="12" fill="#E8B589" />
+        <path d="M84 140 Q120 122 156 140 L166 200 Q120 214 74 200 Z" fill="#FFFFFF" />
+        <path d="M84 140 Q100 130 92 152 L74 200 Q66 196 68 186 Z" fill="#3E6FA6" />
+        <path d="M156 140 Q140 130 148 152 L166 200 Q174 196 172 186 Z" fill="#3E6FA6" />
+        <path d="M100 132 Q120 124 140 132 Q136 144 120 144 Q104 144 100 132Z" fill="#3E6FA6" />
+        <path d="M96 156 L144 156 L138 208 Q120 216 102 208 Z" fill="#6F4E37" />
+        <path d="M90 150 L96 156 M150 150 L144 156" stroke="#4A2C1A" stroke-width="3" stroke-linecap="round" />
+        <circle cx="120" cy="178" r="9" fill="none" stroke="#EDE0C8" stroke-width="2" />
+        <path d="M120 174 q-4 4 0 8 q4 -4 0 -8Z" fill="#EDE0C8" />
+        <rect x="110" y="118" width="20" height="18" fill="#E8B589" />
+        <circle cx="120" cy="90" r="42" fill="#E8B589" />
+        <circle cx="78" cy="92" r="8" fill="#E8B589" />
+        <circle cx="162" cy="92" r="8" fill="#E8B589" />
+        <g fill="#3C2415">
+          <circle cx="86" cy="60" r="16" />
+          <circle cx="104" cy="48" r="18" />
+          <circle cx="124" cy="44" r="19" />
+          <circle cx="144" cy="48" r="18" />
+          <circle cx="158" cy="62" r="16" />
+          <circle cx="94" cy="76" r="12" />
+          <circle cx="150" cy="76" r="12" />
+          <circle cx="120" cy="58" r="20" />
+        </g>
+        <circle cx="105" cy="94" r="5.5" fill="#241A12" />
+        <circle cx="135" cy="94" r="5.5" fill="#241A12" />
+        <circle cx="103" cy="92" r="1.6" fill="#fff" />
+        <circle cx="133" cy="92" r="1.6" fill="#fff" />
+        <path d="M108 110 Q120 118 132 110" fill="none" stroke="#4A2C1A" stroke-width="2.6" stroke-linecap="round" />
+        <ellipse cx="90" cy="104" rx="7" ry="4" fill="#E2603E" opacity=".35" />
+        <ellipse cx="150" cy="104" rx="7" ry="4" fill="#E2603E" opacity=".35" />
+      </symbol>
+
+      <!-- Maxi festejando: mismos colores/silueta que mascota-maxi, pero con
+           los brazos arriba y sonrisa grande — aparece cada vez que se sirve
+           bien un pedido (ver ui.js mostrarCelebracionMaxi), no solo en el Home. -->
+      <symbol id="mascota-maxi-festejo" viewBox="0 0 240 300">
+        <ellipse cx="120" cy="288" rx="55" ry="9" fill="rgba(0,0,0,.25)" />
+        <rect x="92" y="196" width="24" height="70" rx="10" fill="#2E3A4E" />
+        <rect x="124" y="196" width="24" height="70" rx="10" fill="#2E3A4E" />
+        <path d="M104 196 V260 M136 196 V260" stroke="#1E2733" stroke-width="2" />
+        <path d="M86 258 h34 q6 0 6 8 t-10 8 h-34 q-6 0 -2 -12 Z" fill="#3E6FA6" />
+        <path d="M86 266 h30" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+        <path d="M118 258 h34 q6 0 6 8 t-10 8 h-34 q-6 0 -2 -12 Z" fill="#3E6FA6" />
+        <path d="M118 266 h30" stroke="#fff" stroke-width="4" stroke-linecap="round" />
+        <!-- Brazos arriba (en vez de los rects colgando de mascota-maxi) -->
+        <path d="M75 158 Q58 128 44 90" stroke="#E8B589" stroke-width="22" stroke-linecap="round" fill="none" />
+        <path d="M165 158 Q182 128 196 90" stroke="#E8B589" stroke-width="22" stroke-linecap="round" fill="none" />
+        <circle cx="42" cy="84" r="13" fill="#E8B589" />
+        <circle cx="198" cy="84" r="13" fill="#E8B589" />
+        <path d="M84 140 Q120 122 156 140 L166 200 Q120 214 74 200 Z" fill="#FFFFFF" />
+        <path d="M84 140 Q100 130 92 152 L74 200 Q66 196 68 186 Z" fill="#3E6FA6" />
+        <path d="M156 140 Q140 130 148 152 L166 200 Q174 196 172 186 Z" fill="#3E6FA6" />
+        <path d="M100 132 Q120 124 140 132 Q136 144 120 144 Q104 144 100 132Z" fill="#3E6FA6" />
+        <path d="M96 156 L144 156 L138 208 Q120 216 102 208 Z" fill="#6F4E37" />
+        <path d="M90 150 L96 156 M150 150 L144 156" stroke="#4A2C1A" stroke-width="3" stroke-linecap="round" />
+        <circle cx="120" cy="178" r="9" fill="none" stroke="#EDE0C8" stroke-width="2" />
+        <path d="M120 174 q-4 4 0 8 q4 -4 0 -8Z" fill="#EDE0C8" />
+        <rect x="110" y="118" width="20" height="18" fill="#E8B589" />
+        <circle cx="120" cy="90" r="42" fill="#E8B589" />
+        <circle cx="78" cy="92" r="8" fill="#E8B589" />
+        <circle cx="162" cy="92" r="8" fill="#E8B589" />
+        <g fill="#3C2415">
+          <circle cx="86" cy="60" r="16" />
+          <circle cx="104" cy="48" r="18" />
+          <circle cx="124" cy="44" r="19" />
+          <circle cx="144" cy="48" r="18" />
+          <circle cx="158" cy="62" r="16" />
+          <circle cx="94" cy="76" r="12" />
+          <circle cx="150" cy="76" r="12" />
+          <circle cx="120" cy="58" r="20" />
+        </g>
+        <!-- Ojos felices cerrados (^ ^) en vez de los círculos con brillo -->
+        <path d="M98 92 Q105 85 112 92" fill="none" stroke="#241A12" stroke-width="3" stroke-linecap="round" />
+        <path d="M128 92 Q135 85 142 92" fill="none" stroke="#241A12" stroke-width="3" stroke-linecap="round" />
+        <!-- Sonrisa grande abierta -->
+        <path d="M102 106 Q120 128 138 106 Q120 118 102 106Z" fill="#4A2C1A" />
+        <path d="M108 110 Q120 116 132 110" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6" />
+        <ellipse cx="90" cy="102" rx="7" ry="4" fill="#E2603E" opacity=".4" />
+        <ellipse cx="150" cy="102" rx="7" ry="4" fill="#E2603E" opacity=".4" />
+        <!-- Chispas de celebración -->
+        <g fill="#C9A227">
+          <path d="M32 130 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4Z" />
+          <path d="M208 150 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3Z" />
+          <path d="M56 40 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3Z" />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ═══ PANTALLA DE INICIO ═══ -->
+  <section id="pantalla-home" class="pantalla-home">
+    <div class="home-capa-fondo" aria-hidden="true">
+      <div class="home-nube home-nube--1"></div>
+      <div class="home-nube home-nube--2"></div>
+      <div class="home-vapor home-vapor--1"></div>
+      <div class="home-vapor home-vapor--2"></div>
+      <div class="home-vapor home-vapor--3"></div>
+    </div>
+    <a href="../Coffee.html" class="juego-volver home-volver">← Volver a Coffee App</a>
+    <div class="home-contenido">
+      <svg class="home-mascota"><use href="#mascota-maxi"></use></svg>
+      <h1 class="home-titulo">☕ Maxi Barista</h1>
+      <p class="home-subtitulo">Conviértete en el barista más rápido de la ciudad — atiende clientes, prepara sus pedidos exactos y haz crecer tu cafetería.</p>
+      <button type="button" id="btn-jugar" class="btn-jugar">▶ Jugar</button>
+      <div class="home-stats">
+        <span>🏆 Mejor puntaje <strong id="home-record">0</strong></span>
+        <span>⭐ Nivel guardado <strong id="home-nivel">1</strong></span>
+      </div>
+      <button type="button" id="btn-home-top" class="home-link-top">Ver TOP de baristas</button>
+    </div>
+  </section>
+
+  <!-- ═══ PANTALLA DE JUEGO (oculta hasta que se presiona "Jugar") ═══ -->
+  <div id="pantalla-juego" hidden>
+
+  <!-- ═══ AMBIENTE DE FONDO: parallax + vapor + grano ═══ -->
+  <div class="juego-fondo-ambiente" aria-hidden="true">
+    <div class="juego-fondo-mancha juego-fondo-mancha--1"></div>
+    <div class="juego-fondo-mancha juego-fondo-mancha--2"></div>
+    <div class="juego-fondo-mancha juego-fondo-mancha--3"></div>
+    <div class="juego-fondo-vapor juego-fondo-vapor--1"></div>
+    <div class="juego-fondo-vapor juego-fondo-vapor--2"></div>
+    <div class="juego-fondo-vapor juego-fondo-vapor--3"></div>
+    <div class="juego-fondo-mota juego-fondo-mota--1"></div>
+    <div class="juego-fondo-mota juego-fondo-mota--2"></div>
+    <div class="juego-fondo-mota juego-fondo-mota--3"></div>
+    <div class="juego-fondo-mota juego-fondo-mota--4"></div>
+  </div>
+
+  <!-- ═══ ENCABEZADO / HUD ═══ -->
+  <header class="juego-header">
+    <div class="juego-marca">☕ Maxi Barista <span>Juego · Beta</span></div>
+    <a href="../Coffee.html" class="juego-volver">← Volver a Coffee App</a>
+
+    <div class="hud">
+      <div class="hud-item hud-nivel-wrap">
+        <span>⭐ Nivel <strong id="hud-nivel">1</strong></span>
+        <span class="hud-nivel-barra-fondo"><span class="hud-nivel-barra" id="hud-nivel-barra"></span></span>
+      </div>
+      <div class="hud-item">💰 <strong id="hud-dinero">$0.00</strong></div>
+      <div class="hud-item" title="Clientes satisfechos">😊 <strong id="hud-felices">0</strong></div>
+      <div class="hud-item hud-item--tiempo" id="hud-tiempo-wrap" title="Tiempo restante del cliente más urgente">⏱ <strong id="hud-tiempo">--</strong></div>
+
+      <div class="radio-widget">
+        <button type="button" id="btn-radio-play" class="hud-icon-btn" aria-label="Reproducir radio" title="Radio de la cafetería">📻</button>
+        <span class="radio-info">
+          <span class="radio-estado" id="radio-estado">Radio en pausa</span>
+          <span class="radio-pista" id="radio-pista"></span>
+        </span>
+        <input type="range" id="radio-volumen" min="0" max="100" value="35" class="radio-volumen" title="Volumen de la radio" />
+      </div>
+
+      <button type="button" id="btn-top" class="hud-icon-btn" aria-label="Ver TOP de baristas" title="Ver TOP de baristas">🏆</button>
+      <button type="button" id="btn-silenciar" class="hud-icon-btn" aria-label="Silenciar" title="Silenciar efectos de sonido">🔊</button>
+      <button type="button" id="btn-finalizar-turno" class="btn-cs btn-cs--exito btn-finalizar">🏁 Finalizar turno</button>
+      <button type="button" id="btn-reiniciar" class="hud-icon-btn" aria-label="Reiniciar partida" title="Reiniciar progreso">↺</button>
+    </div>
+  </header>
+
+  <!-- ═══ LAYOUT DE 3 ZONAS: todo en una sola página, sin pestañas — la
+       Estantería dejó de ser una zona propia (ver .estacion-adicionales
+       dentro de cada tarjeta de estación, más abajo). ═══ -->
+  <main class="juego-layout">
+
+    <!-- ZONA 1: CLIENTES -->
+    <section class="zona-clientes-wrap">
+      <div class="zona-titulo">👥 Clientes</div>
+      <div class="panel">
+        <div id="zona-clientes"></div>
+      </div>
+    </section>
+
+    <!-- ZONA 2: MÁQUINA DE ESPRESSO — opcional: solo la necesitas para
+         espresso/agua/leche caliente-fría-espumada; los demás ingredientes
+         ("productos adicionales") aparecen directo dentro de cada tarjeta
+         de estación, según lo que pida esa bebida. Actúa sobre la estación
+         enfocada (la que hayas hecho clic más recientemente), y cada
+         estación tiene su propio temporizador — puedes dejar una brewing y
+         seguir trabajando en otra mientras tanto. -->
+    <section class="zona-maquina-wrap">
+      <div class="zona-titulo">⚙️ Máquina de Espresso <span class="zona-subtitulo">(opcional)</span></div>
+      <div class="panel">
+        <div class="maquina-silueta"><svg><use href="#maquina-icono"></use></svg></div>
+        <div class="maquina-enfoque" id="maquina-enfoque">Selecciona una estación →</div>
+        <div id="maquina-botones"></div>
+      </div>
+    </section>
+
+    <!-- ZONA 3: ESTACIONES DE PREPARACIÓN — hasta 3 pedidos en paralelo.
+         Clic en una tarjeta la enfoca (los clics de máquina aplican a la
+         estación enfocada); cada una tiene su propio Servir y sus propios
+         "productos adicionales" (ingredientes de estante que pide ESA
+         bebida — ver ui.js actualizarEstacion). -->
+    <section class="zona-preparacion-wrap">
+      <div class="zona-titulo">🥤 Estaciones de Preparación <span class="zona-subtitulo">trabaja varias a la vez</span></div>
+      <div id="estaciones"></div>
+      <div class="capa-flotantes" id="capa-flotantes"></div>
+    </section>
+
+  </main>
+
+  <!-- Celebración de Maxi: aparece un momento cada vez que se sirve bien un
+       pedido (ver game.js _alServirCorrecto → ui.js mostrarCelebracionMaxi). -->
+  <div class="celebracion-maxi" id="celebracion-maxi" aria-hidden="true">
+    <svg class="celebracion-maxi-svg"><use href="#mascota-maxi-festejo"></use></svg>
+    <span class="celebracion-maxi-texto" id="celebracion-maxi-texto"></span>
+  </div>
+
+  <div class="modal-overlay-cs" id="modal-nivel">
+    <div class="modal-nivel-caja" id="modal-nivel-texto"></div>
+  </div>
+
+  <!-- Modal de fin de turno: captura nombre/correo para el TOP global -->
+  <div class="modal-overlay-cs" id="modal-turno">
+    <div class="modal-nivel-caja modal-turno-caja">
+      <strong>🏁 Turno terminado</strong>
+      <p id="turno-resumen"></p>
+      <form id="form-turno">
+        <input type="text" id="turno-nombre" placeholder="Tu nombre" maxlength="40" required />
+        <input type="email" id="turno-correo" placeholder="Tu correo (para el TOP)" maxlength="120" required />
+        <div class="turno-acciones">
+          <button type="submit" class="btn-cs btn-cs--exito">Enviar al TOP 🏆</button>
+          <button type="button" id="btn-turno-omitir" class="btn-cs btn-cs--fantasma" style="flex:0 0 auto;">Omitir</button>
+        </div>
+        <p class="turno-msg" id="turno-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal del TOP 10 -->
+  <div class="modal-overlay-cs" id="modal-top">
+    <div class="modal-nivel-caja modal-top-caja">
+      <strong>🏆 TOP Baristas</strong>
+      <ol id="top-lista"></ol>
+      <button type="button" id="btn-top-cerrar" class="btn-cs btn-cs--fantasma">Cerrar</button>
+    </div>
+  </div>
+
+  <footer class="juego-footer">
+    Maxi Barista · Juego (Beta) — © 2026 César Cardona Martínez. Progreso guardado automáticamente en este navegador.
+  </footer>
+
+  </div><!-- /pantalla-juego -->
+
+  <!-- ═══ SCRIPTS: scripts clásicos (sin type="module") a propósito, para que
+       el juego funcione abriendo index.html directamente por file:// —
+       los módulos ES6 bloquean CORS bajo file://. Orden = dependencias. ═══ -->
+  <script src="js/recipes.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/radio.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/machine.js"></script>
+  <script src="js/customers.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+
+</html>

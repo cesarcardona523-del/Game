@@ -1,0 +1,390 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   game.css — Estilos específicos de cada una de las 4 zonas de juego.
+   v2: soporta 3 estaciones de preparación en paralelo (Zona 4) y una
+   máquina de espresso que actúa sobre la estación enfocada (Zona 2).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── ZONA 1: CLIENTES ── */
+#zona-clientes {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.clientes-vacio { font-size: 13px; color: rgba(237, 224, 200, .5); padding: 10px 4px; }
+
+.cliente-card {
+  flex: 0 0 210px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cs-cream);
+  color: var(--cs-ink);
+  border: 2px solid transparent;
+  border-radius: var(--cs-radius-sm);
+  padding: 10px 12px;
+  text-align: left;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .18), 0 8px 18px rgba(0, 0, 0, .18);
+  transition: transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+  animation: cliente-entra .35s ease both;
+}
+.cliente-card:hover { transform: translateY(-2px); box-shadow: 0 5px 0 rgba(0, 0, 0, .18), 0 12px 22px rgba(0, 0, 0, .3); }
+.cliente-card:active { transform: translateY(1px); }
+.cliente-card--asignado { border-color: var(--cs-green-light); background: #EFE7D2; }
+.cliente-card--asignado em { color: var(--cs-green-light); font-style: normal; font-weight: 700; }
+
+.cliente-avatar {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 -4px 6px rgba(0, 0, 0, .25);
+}
+.cliente-avatar-svg { width: 130%; height: 130%; }
+
+.cliente-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.cliente-nombre { font-size: 13px; font-weight: 700; }
+.cliente-pedido { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--cs-ink-70); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cliente-pedido-icono { width: 14px; height: 14px; flex-shrink: 0; }
+
+.paciencia-barra { display: block; height: 5px; border-radius: 4px; background: rgba(42, 29, 18, .15); overflow: hidden; }
+.paciencia-barra-relleno { display: block; height: 100%; border-radius: 4px; transition: width .3s linear; }
+.paciencia--alta { background: var(--cs-green-light); }
+.paciencia--media { background: var(--cs-gold); }
+.paciencia--critica { background: var(--cs-red); animation: pulso-critico .6s ease-in-out infinite; }
+
+/* ── ZONA 2: MÁQUINA DE ESPRESSO ── */
+.zona-maquina-wrap .panel { display: flex; flex-direction: column; align-items: center; gap: 12px; height: 100%; }
+
+.maquina-silueta {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(180deg, var(--cs-wood) 0%, var(--cs-wood-dark) 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, .3);
+  box-shadow: inset 0 2px 8px rgba(255, 255, 255, .07), inset 0 -12px 22px rgba(0, 0, 0, .4), 0 6px 0 rgba(0, 0, 0, .2);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+.maquina-silueta svg { width: 58%; height: 92%; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .35)); }
+
+.maquina-enfoque {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cs-gold);
+  background: rgba(201, 162, 39, .1);
+  border: 1px solid rgba(201, 162, 39, .3);
+  border-radius: 999px;
+  padding: 4px 12px;
+  text-align: center;
+}
+
+#maquina-botones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 9px;
+  width: 100%;
+}
+
+.proceso-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(180deg, var(--cs-coffee) 0%, var(--cs-coffee-dark) 100%);
+  border: 1px solid rgba(0, 0, 0, .3);
+  border-radius: var(--cs-radius-sm);
+  padding: 10px 6px 12px;
+  color: var(--cs-beige);
+  overflow: hidden;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .3);
+  transition: transform .1s, box-shadow .1s, filter .2s;
+}
+.proceso-btn:hover:not(:disabled) { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
+.proceso-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, .3); }
+.proceso-btn--activo { background: linear-gradient(180deg, var(--cs-green-light), var(--cs-green)); border-color: var(--cs-gold); }
+.proceso-icono { width: 20px; height: 20px; }
+.proceso-nombre { font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2; }
+
+.proceso-progreso { position: absolute; left: 0; bottom: 0; width: 100%; height: 4px; background: rgba(0, 0, 0, .35); }
+.proceso-progreso-relleno { display: block; height: 100%; width: 0%; background: var(--cs-gold); transition: width .05s linear; }
+
+.ingrediente-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(180deg, var(--cs-cream), var(--cs-beige));
+  color: var(--cs-ink);
+  border: 1px solid rgba(42, 29, 18, .12);
+  border-radius: var(--cs-radius-sm);
+  padding: 9px 4px;
+  box-shadow: 0 2px 0 rgba(42, 29, 18, .18);
+  transition: transform .1s ease, box-shadow .1s ease, filter .15s ease;
+}
+.ingrediente-btn:hover { transform: translateY(-2px); filter: brightness(1.04); box-shadow: 0 4px 0 rgba(42, 29, 18, .18); }
+.ingrediente-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(42, 29, 18, .18); }
+.ingrediente-icono { width: 22px; height: 22px; color: var(--cs-coffee-dark); }
+.ingrediente-nombre { font-size: 9.5px; font-weight: 700; text-align: center; line-height: 1.15; }
+
+/* "Productos adicionales": ingredientes de estante DENTRO de cada tarjeta de
+   estación, filtrados a lo que pide esa bebida en concreto (ver
+   ui.js actualizarEstacion) — reemplaza la vieja Estantería global. */
+.estacion-adicionales-wrap { display: flex; flex-direction: column; gap: 6px; }
+/* Sin esto, [hidden] pierde el empate de especificidad contra la regla de
+   arriba (misma trampa ya documentada para .pantalla-home) y el bloque de
+   adicionales se queda visible aunque la receta no necesite estante. */
+.estacion-adicionales-wrap[hidden] { display: none; }
+.estacion-adicionales-titulo { font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; color: rgba(237, 224, 200, .5); }
+.estacion-adicionales { display: flex; flex-wrap: wrap; gap: 6px; }
+.ingrediente-btn--mini { flex: 1 1 68px; padding: 6px 4px; gap: 2px; }
+.ingrediente-btn--mini .ingrediente-icono { width: 17px; height: 17px; }
+.ingrediente-btn--mini .ingrediente-nombre { font-size: 8.5px; }
+.ingrediente-btn--hecho { opacity: .55; filter: grayscale(.3); }
+
+/* ── ZONA 3: ESTACIONES DE PREPARACIÓN (hasta 3 en paralelo) ──
+   auto-fit en vez de repeat(3) fijo: las tarjetas se reacomodan solas según
+   el ancho real disponible (1, 2 o 3 columnas) sin depender de breakpoints
+   afinados a mano que se desincronizan con el resto del layout. */
+#estaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.modo-compacto #estaciones { gap: 10px; }
+
+.estacion-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--cs-panel), var(--cs-black-soft));
+  border: 2px solid rgba(237, 224, 200, .1);
+  border-radius: var(--cs-radius);
+  box-shadow: var(--cs-shadow);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+.estacion-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  width: 130%;
+  height: 130%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at top, rgba(255, 214, 140, .12), transparent 62%);
+  pointer-events: none;
+}
+.estacion-card:hover { transform: translateY(-2px); box-shadow: var(--cs-shadow), 0 10px 24px rgba(0, 0, 0, .3); }
+.estacion-card--enfocada { border-color: var(--cs-gold); box-shadow: 0 0 0 3px rgba(201, 162, 39, .18), var(--cs-shadow); }
+.estacion-card--libre { opacity: .78; }
+
+.estacion-header { display: flex; justify-content: space-between; align-items: center; }
+.estacion-num { font-family: var(--cs-font-display); font-size: 13px; color: var(--cs-beige); }
+.estacion-badge {
+  font-size: 9.5px; font-weight: 700; color: var(--cs-gold);
+  background: rgba(201, 162, 39, .12); border-radius: 999px; padding: 2px 8px;
+  min-height: 16px;
+}
+.estacion-badge--activo { animation: pulso-critico 1s ease-in-out infinite; }
+
+#zona-clientes .cliente-pedido em { font-style: normal; }
+
+.estacion-pedido { background: rgba(0, 0, 0, .18); border-radius: var(--cs-radius-sm); padding: 10px 12px; min-height: 58px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pedido-vacio { font-size: 11.5px; color: rgba(237, 224, 200, .45); }
+.pedido-etiqueta { font-size: 9.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--cs-gold); }
+.pedido-bebida { display: flex; align-items: center; gap: 6px; font-family: var(--cs-font-display); font-size: 15px; color: var(--cs-cream); min-width: 0; }
+.pedido-bebida-icono { width: 16px; height: 16px; flex-shrink: 0; }
+/* Sin esto, la cadena "Espresso → Leche caliente → Espuma de leche → ..."
+   desborda la tarjeta en vez de ajustarse cuando la columna se angosta —
+   la causa real de que Estaciones no se viera responsive. */
+.pedido-pasos { font-size: 10px; color: rgba(237, 224, 200, .55); overflow-wrap: break-word; }
+
+.taza-escenario { display: flex; justify-content: center; padding: 2px 0; }
+.taza-escenario--compacta { padding: 0; }
+
+/* Taza rediseñada: silueta ligeramente cónica con esquinas redondeadas vía
+   clip-path (en vez del mug rectangular anterior) — más parecida a las tazas
+   de referencia. El clip-path es un path fijo en px, calculado para el tamaño
+   exacto del recuadro de .taza-cuerpo en cada variante (normal/chica). */
+.taza { position: relative; width: 92px; height: 100px; }
+.taza--chica { width: 80px; height: 86px; }
+
+.taza::before {
+  content: '';
+  position: absolute; left: 9px; right: 9px; top: 10px; height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .85), rgba(255, 255, 255, .15));
+  z-index: 1;
+}
+.taza--chica::before { left: 8px; right: 8px; top: 9px; height: 6px; }
+
+.taza-cuerpo {
+  position: absolute; inset: 12px 5px 0 5px;
+  clip-path: path('M8,0 L74,0 A8,8 0 0 1 82,8 L82,64 L74,72 A16,16 0 0 1 58,88 L24,88 A16,16 0 0 1 8,72 L8,64 L0,64 L0,8 A8,8 0 0 1 8,0 Z');
+  overflow: hidden;
+  background: linear-gradient(105deg, rgba(255, 255, 255, .10) 0%, rgba(255, 255, 255, .02) 30%, rgba(0, 0, 0, .05) 100%), rgba(255, 255, 255, .04);
+  border: 2.5px solid var(--cs-white);
+  display: flex; flex-direction: column-reverse;
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .45)) drop-shadow(0 0 1px rgba(0, 0, 0, .6));
+}
+.taza--chica .taza-cuerpo {
+  clip-path: path('M7,0 L63,0 A7,7 0 0 1 70,7 L70,55 L63,61 A13,13 0 0 1 50,74 L20,74 A13,13 0 0 1 7,61 L7,55 L0,55 L0,7 A7,7 0 0 1 7,0 Z');
+}
+.taza-asa {
+  position: absolute; right: -15px; top: 24px;
+  width: 20px; height: 30px;
+  border: 4px solid var(--cs-white);
+  border-radius: 50%;
+  clip-path: inset(0 0 0 40%);
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, .4));
+}
+.taza-platillo { position: absolute; left: -6px; right: -6px; bottom: -6px; height: 6px; background: var(--cs-cream); border-radius: 50%; opacity: .9; }
+
+.taza-capa { width: 100%; flex-shrink: 0; transition: height .3s ease; animation: capa-crece .3s ease both; }
+.taza-topping { width: 100%; height: 6px; flex-shrink: 0; animation: capa-crece .25s ease both; }
+
+.taza-vacio-msg {
+  position: absolute; inset: 12px 5px 0 5px;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; font-size: 9px; color: rgba(237, 224, 200, .4); padding: 8px;
+}
+.taza--vacia .taza-cuerpo { background: transparent; }
+
+.pasos-chips { display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; justify-content: center; }
+.paso-chip {
+  font-size: 9.5px;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(237, 224, 200, .15);
+  color: var(--cs-beige);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.pasos-vacio { font-size: 10px; color: rgba(237, 224, 200, .35); }
+
+.estacion-acciones { display: flex; gap: 6px; margin-top: auto; }
+
+/* ── MODO COMPACTO ── activado por JS (ver ajustarModoCompacto en game.js)
+   cuando el espacio disponible es chico — el caso de referencia es el
+   iframe de Coffee App (ancho variable, pero SIEMPRE bajo de alto), no solo
+   el celular. La idea NO es encoger todo con transform (eso deja los
+   botones ilegibles/imposibles de tocar) sino rediseñar: quitar lo
+   decorativo y agrandar lo que sí hay que tocar. */
+.modo-compacto .maquina-silueta { display: none; }
+.modo-compacto .zona-maquina-wrap .panel { height: auto; gap: 8px; padding: 10px; }
+.modo-compacto .maquina-enfoque { padding: 5px 12px; font-size: 12px; }
+
+/* El pie de página (aviso de copyright) es lo primero prescindible cuando
+   el espacio es chico — nunca es lo que hace falta ver para jugar. */
+.modo-compacto .juego-footer { display: none; }
+.modo-compacto .juego-layout { padding: 10px 14px 12px; gap: 10px; }
+.modo-compacto .panel { padding: 10px; }
+.modo-compacto .zona-titulo { margin-bottom: 6px; }
+
+.modo-compacto .proceso-btn { padding: 14px 8px; gap: 6px; }
+.modo-compacto .proceso-icono { width: 26px; height: 26px; }
+.modo-compacto .proceso-nombre { font-size: 12.5px; }
+
+.modo-compacto .estacion-card { padding: 10px; gap: 8px; }
+.modo-compacto .estacion-pedido { padding: 8px 10px; min-height: 0; }
+/* La taza usa un clip-path en px fijo calculado para su tamaño normal — no
+   se achica aquí con width/height (rompería la silueta), solo con scale()
+   que conserva la forma proporcionalmente. Los valores de abajo (<700px)
+   la achican más — tienen que ir DESPUÉS en el archivo que esta regla
+   general para ganarle en la cascada (misma especificidad, gana el que
+   aparece último). */
+.modo-compacto .taza-escenario--compacta { transform: scale(.8); transform-origin: top center; margin-bottom: -14px; }
+
+/* Por debajo de 700px ya no hay columna lateral para la máquina (ver
+   style.css) — todo se apila en una sola columna, y ESO es lo que de
+   verdad se queda sin alto en un celular. Achicar un poco los botones de
+   la máquina (3 columnas, 2 filas en vez de 2 columnas × 3 filas) y forzar
+   2 columnas fijas en las estaciones (en vez de que auto-fit las apile de
+   a una) recupera ese alto sin tener que escalar toda la pantalla. */
+@media (max-width: 700px) {
+  .modo-compacto #maquina-botones { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .modo-compacto .proceso-btn { padding: 10px 4px; gap: 4px; }
+  .modo-compacto .proceso-icono { width: 20px; height: 20px; }
+  /* Antes quedaba en 10.5px acá — más chico que el modo compacto "base"
+     de arriba (12.5px), justo al revés de lo que se pedía. El texto de
+     los botones de la máquina es información real (qué hace cada botón),
+     no decoración: se prioriza legible sobre que la cuadrícula quede
+     perfectamente pareja. */
+  .modo-compacto .proceso-nombre { font-size: 12px; line-height: 1.15; }
+  .modo-compacto #estaciones { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+  /* Misma lógica en las estaciones: "PEDIDO DE X" ya se sabe por la fila
+     de Clientes de arriba, así que se oculta para dejarle más alto real al
+     nombre de la bebida y a la lista de pasos, que sí hay que leer bien. */
+  .modo-compacto .pedido-etiqueta { display: none; }
+  .modo-compacto .estacion-pedido { padding: 6px 8px; }
+  .modo-compacto .taza-escenario--compacta { transform: scale(.68); margin: -8px -20px -20px; }
+}
+
+.modo-compacto .estacion-num { font-size: 14.5px; }
+.modo-compacto .estacion-badge { font-size: 11px; padding: 3px 9px; }
+.modo-compacto .pedido-bebida { font-size: 17px; }
+.modo-compacto .pedido-bebida-icono { width: 18px; height: 18px; }
+.modo-compacto .pedido-pasos { font-size: 12.5px; line-height: 1.35; }
+.modo-compacto .pedido-etiqueta { font-size: 11px; }
+
+.modo-compacto .btn-cs { padding: 14px 16px; font-size: 14.5px; }
+.modo-compacto .btn-cs--fantasma { padding: 14px 15px; }
+
+.modo-compacto .ingrediente-btn--mini { padding: 10px 6px; flex-basis: 76px; }
+.modo-compacto .ingrediente-btn--mini .ingrediente-icono { width: 20px; height: 20px; }
+.modo-compacto .ingrediente-btn--mini .ingrediente-nombre { font-size: 10px; }
+
+/* Los chips de "ya agregado" repiten lo que ya dice el pedido — quitarlos
+   en modo compacto libera alto para que los botones de arriba sean grandes. */
+.modo-compacto .pasos-chips { display: none; }
+
+.btn-cs {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, .3);
+  transition: transform .1s ease, box-shadow .1s ease, filter .15s ease;
+}
+.btn-cs:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
+.btn-cs:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, .3); }
+.btn-cs--primario { background: linear-gradient(180deg, var(--cs-green-light), var(--cs-green)); color: var(--cs-white); }
+.btn-cs--exito { background: linear-gradient(180deg, #E4C55A, var(--cs-gold)); color: var(--cs-coffee-dark); }
+.btn-cs--fantasma { background: rgba(255, 255, 255, .06); color: var(--cs-beige); border: 1px solid rgba(237, 224, 200, .18); flex: 0 0 auto; min-width: 0; padding: 10px 13px; box-shadow: none; }
+
+/* ── SACUDIDA DE ERROR (feedback) ── */
+.sacudida { animation: sacudir .35s ease; }
+
+/* ── RESPONSIVE ──
+   `minmax(0, 1fr)` en vez de `1fr` en TODOS los grids de este archivo a
+   propósito: una columna `1fr` sola tiene un mínimo implícito de `auto`
+   (el ancho del contenido), así que si un ingrediente como "Leche
+   condensada" no cabe, desborda la cuadrícula entera en vez de encogerse.
+   Es el motivo por el que el juego se veía roto en celulares angostos.
+   `#estaciones` ya no necesita breakpoints propios: `repeat(auto-fit, ...)`
+   (ver arriba) se reacomoda solo entre 1, 2 y 3 columnas según el ancho
+   real, así que no se desincroniza con el resto de las reglas de aquí. */
+@media (max-width: 520px) {
+  .cliente-card { flex: 0 0 min(78vw, 240px); }
+  #maquina-botones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btn-cs { padding: 13px 14px; font-size: 13.5px; }
+  .estacion-acciones { gap: 8px; }
+  .juego-layout { padding: 14px 14px 24px; }
+  .juego-header { padding: 12px 14px; gap: 10px; }
+  .juego-marca { font-size: 18px; }
+  .home-mascota { width: 130px; height: 162px; }
+}
