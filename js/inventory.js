@@ -32,3 +32,9 @@ class Inventory {
       .map((id) => Object.assign({ id }, INGREDIENTS[id]));
   }
 }
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Inventory };
+}

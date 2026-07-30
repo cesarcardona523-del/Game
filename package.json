@@ -1,0 +1,14 @@
+{
+  "name": "maxi-barista",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Coffee shop game — test suite only, no build step (game itself runs as plain <script> tags).",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "vitest": "^4.1.10"
+  }
+}

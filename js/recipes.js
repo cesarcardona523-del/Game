@@ -120,28 +120,36 @@ const NOMBRE_PROCESO = {
  * Melange y Café con miel; en este juego el único método de obtener café
  * negro es el botón "Preparar Espresso", así que ambas recetas usan
  * `espresso` internamente (incluido en el comentario de cada receta).
+ *
+ * Precios reescalados por esfuerzo real (pasos de máquina, ~2s fijos cada
+ * uno, más un peso menor por ingrediente de estante) en vez del precio
+ * "de menú real" original — antes, bebidas de 1 solo paso de máquina
+ * (Affogato, Vienés, Melange, Bombón) pagaban 3-4x más por segundo de
+ * esfuerzo que Latte/Cappuccino/Moka de 3 pasos, lo cual penalizaba las
+ * recetas más vistosas del juego. Vienés y Melange comparten precio a
+ * propósito: ya comparten exactamente los mismos pasos (ver nota arriba).
  */
 const RECIPES = [
-  { id: 'espresso', nombre: 'Espresso', tier: 1, precio: 2.5, xp: 30, icon: 'ing-espresso', pasos: ['espresso'] },
-  { id: 'americano', nombre: 'Americano', tier: 1, precio: 3.0, xp: 35, icon: 'ing-agua', pasos: ['espresso', 'agua_caliente'] },
-  { id: 'latte', nombre: 'Latte', tier: 1, precio: 4.0, xp: 45, icon: 'ing-espuma', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche'] },
+  { id: 'espresso', nombre: 'Espresso', tier: 1, precio: 2.0, xp: 30, icon: 'ing-espresso', pasos: ['espresso'] },
+  { id: 'americano', nombre: 'Americano', tier: 1, precio: 4.0, xp: 35, icon: 'ing-agua', pasos: ['espresso', 'agua_caliente'] },
+  { id: 'latte', nombre: 'Latte', tier: 1, precio: 6.0, xp: 45, icon: 'ing-espuma', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche'] },
 
-  { id: 'cappuccino', nombre: 'Cappuccino', tier: 2, precio: 4.2, xp: 50, icon: 'ing-espuma', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche'] },
-  { id: 'cortado', nombre: 'Café Cortado', tier: 2, precio: 3.5, xp: 45, icon: 'ing-leche-espumada', pasos: ['espresso', 'leche_espumada'] },
-  { id: 'bombon', nombre: 'Café Bombón', tier: 2, precio: 4.5, xp: 55, icon: 'ing-condensada', pasos: ['espresso', 'leche_condensada'] },
+  { id: 'cappuccino', nombre: 'Cappuccino', tier: 2, precio: 6.3, xp: 50, icon: 'ing-espuma', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche'] },
+  { id: 'cortado', nombre: 'Café Cortado', tier: 2, precio: 4.2, xp: 45, icon: 'ing-leche-espumada', pasos: ['espresso', 'leche_espumada'] },
+  { id: 'bombon', nombre: 'Café Bombón', tier: 2, precio: 2.7, xp: 55, icon: 'ing-condensada', pasos: ['espresso', 'leche_condensada'] },
 
-  { id: 'moka', nombre: 'Café Moka', tier: 3, precio: 5.5, xp: 70, icon: 'ing-jarabe', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche', 'jarabe_de_chocolate'] },
+  { id: 'moka', nombre: 'Café Moka', tier: 3, precio: 7.3, xp: 70, icon: 'ing-jarabe', pasos: ['espresso', 'leche_caliente', 'espuma_de_leche', 'jarabe_de_chocolate'] },
   // "Café negro" de la tabla original = espresso (ver nota arriba).
-  { id: 'vienes', nombre: 'Café Vienés', tier: 3, precio: 4.8, xp: 60, icon: 'ing-merengue', pasos: ['espresso', 'merengue'] },
-  { id: 'melange', nombre: 'Café Melange', tier: 3, precio: 4.6, xp: 60, icon: 'ing-merengue', pasos: ['espresso', 'merengue'] },
-  { id: 'breve', nombre: 'Café Breve', tier: 3, precio: 4.7, xp: 60, icon: 'ing-espuma', pasos: ['espresso', 'leche', 'espuma_de_leche'] },
+  { id: 'vienes', nombre: 'Café Vienés', tier: 3, precio: 2.9, xp: 60, icon: 'ing-merengue', pasos: ['espresso', 'merengue'] },
+  { id: 'melange', nombre: 'Café Melange', tier: 3, precio: 2.9, xp: 60, icon: 'ing-merengue', pasos: ['espresso', 'merengue'] },
+  { id: 'breve', nombre: 'Café Breve', tier: 3, precio: 5.1, xp: 60, icon: 'ing-espuma', pasos: ['espresso', 'leche', 'espuma_de_leche'] },
 
-  { id: 'affogato', nombre: 'Affogato', tier: 4, precio: 5.8, xp: 80, icon: 'ing-helado', pasos: ['helado', 'espresso'] },
-  { id: 'largo', nombre: 'Café Largo', tier: 4, precio: 3.2, xp: 40, icon: 'ing-agua', pasos: ['espresso', 'agua_caliente'] },
-  { id: 'con_miel', nombre: 'Café con Miel', tier: 4, precio: 5.0, xp: 65, icon: 'ing-miel', pasos: ['espresso', 'miel', 'canela', 'leche_caliente'] },
-  { id: 'con_hielo', nombre: 'Café con Hielo', tier: 4, precio: 3.8, xp: 45, icon: 'ing-hielo', pasos: ['espresso', 'hielo'] },
-  { id: 'manchado', nombre: 'Café Manchado', tier: 4, precio: 3.6, xp: 45, icon: 'ing-espuma', pasos: ['espresso', 'espuma_de_leche'] },
-  { id: 'lagrima', nombre: 'Café Lágrima', tier: 4, precio: 3.4, xp: 40, icon: 'ing-leche', pasos: ['leche', 'espresso'] },
+  { id: 'affogato', nombre: 'Affogato', tier: 4, precio: 3.0, xp: 80, icon: 'ing-helado', pasos: ['helado', 'espresso'] },
+  { id: 'largo', nombre: 'Café Largo', tier: 4, precio: 4.6, xp: 40, icon: 'ing-agua', pasos: ['espresso', 'agua_caliente'] },
+  { id: 'con_miel', nombre: 'Café con Miel', tier: 4, precio: 6.0, xp: 65, icon: 'ing-miel', pasos: ['espresso', 'miel', 'canela', 'leche_caliente'] },
+  { id: 'con_hielo', nombre: 'Café con Hielo', tier: 4, precio: 3.0, xp: 45, icon: 'ing-hielo', pasos: ['espresso', 'hielo'] },
+  { id: 'manchado', nombre: 'Café Manchado', tier: 4, precio: 4.6, xp: 45, icon: 'ing-espuma', pasos: ['espresso', 'espuma_de_leche'] },
+  { id: 'lagrima', nombre: 'Café Lágrima', tier: 4, precio: 3.0, xp: 40, icon: 'ing-leche', pasos: ['leche', 'espresso'] },
 ];
 
 /** Devuelve la definición completa de una receta por id, o undefined. */
@@ -152,4 +160,10 @@ function obtenerReceta(id) {
 /** Devuelve todas las recetas visibles hasta cierto tier de dificultad (inclusive). */
 function recetasHastaTier(tierMax) {
   return RECIPES.filter(function (r) { return r.tier <= tierMax; });
+}
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { INGREDIENTS, PROCESOS_MAQUINA, NOMBRE_PROCESO, RECIPES, obtenerReceta, recetasHastaTier };
 }

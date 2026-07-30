@@ -321,7 +321,24 @@
      no decoración: se prioriza legible sobre que la cuadrícula quede
      perfectamente pareja. */
   .modo-compacto .proceso-nombre { font-size: 12px; line-height: 1.15; }
-  .modo-compacto #estaciones { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+
+  /* Carrusel horizontal (una tarjeta visible a la vez, con un poco de la
+     siguiente asomando como pista de que hay más) en vez de apiladas.
+     Las 3 tarjetas completas apiladas medían ~425px de alto y forzaban el
+     transform:scale() de toda la pantalla en un celular común (375×812),
+     dejando hasta el botón "Servir" por debajo del mínimo táctil de 44px
+     (ver auditoría de accesibilidad). Mismo patrón que #zona-clientes. */
+  .modo-compacto #estaciones {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding-bottom: 4px;
+  }
+  .modo-compacto .estacion-card {
+    flex: 0 0 88%;
+    scroll-snap-align: center;
+  }
 
   /* Misma lógica en las estaciones: "PEDIDO DE X" ya se sabe por la fila
      de Clientes de arriba, así que se oculta para dejarle más alto real al

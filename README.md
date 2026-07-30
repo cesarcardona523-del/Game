@@ -49,19 +49,29 @@ CoffeeShop/
 │   └── animations.css    Todos los @keyframes
 ├── js/
 │   ├── recipes.js        Datos: INGREDIENTS + RECIPES (única fuente de verdad)
-│   ├── audio.js           AudioEngine — efectos sintetizados (Web Audio API)
-│   ├── radio.js            RadioEngine — música de fondo (ver sección Radio)
-│   ├── leaderboard.js       Leaderboard — TOP global vía Supabase REST
-│   ├── player.js             Player — nivel/xp/dinero/reputación/estadísticas
-│   ├── save.js                 SaveManager — localStorage
-│   ├── inventory.js             Inventory — qué ingredientes están desbloqueados
-│   ├── machine.js                 EspressoMachine — 1 proceso a la vez POR ESTACIÓN
-│   ├── customers.js                 CustomerManager — spawn, paciencia, dificultad
-│   ├── ui.js                          UIController — único módulo que toca el DOM
-│   └── game.js                          Game — orquestador, estaciones, reglas
-└── assets/
-    └── audio/musica/       README con instrucciones para agregar radio real
+│   ├── scoring.js         Fórmulas puras de puntaje/reputación (sin DOM, testeadas)
+│   ├── audio.js            AudioEngine — efectos sintetizados (Web Audio API)
+│   ├── radio.js              RadioEngine — música de fondo (ver sección Radio)
+│   ├── leaderboard.js         Leaderboard — TOP global vía Supabase REST
+│   ├── player.js                Player — nivel/xp/dinero/reputación/estadísticas
+│   ├── save.js                    SaveManager — localStorage
+│   ├── inventory.js                 Inventory — qué ingredientes están desbloqueados
+│   ├── machine.js                     EspressoMachine — 1 proceso a la vez POR ESTACIÓN
+│   ├── customers.js                     CustomerManager — spawn, paciencia, dificultad
+│   ├── ui.js                               UIController — único módulo que toca el DOM
+│   │                                        (usa ElementPool interno para reciclar los
+│   │                                        <span> de VFX en vez de crear/destruir)
+│   └── game.js                               Game — orquestador, estaciones, reglas
+├── assets/
+│   └── audio/musica/       README con instrucciones para agregar radio real
+├── docs/qa/                Plan de QA (clasificación por sistema, casos de borde)
+└── tests/                  Suite Vitest — ver sección "Tests" abajo
 ```
+
+**Solo en este repo de trabajo, NO se copian a `paginaweb/CoffeeShop/`:**
+`package.json`, `package-lock.json`, `vitest.config.js`, `tests/`, `docs/`,
+`.gitignore`, `skills-lock.json`, `.claude/` — son herramientas de desarrollo
+(tests, skills de Claude Code), no parte del juego que se sirve al jugador.
 
 **Por qué scripts clásicos y no ES6 modules:** los navegadores bloquean
 `import`/`export` bajo el protocolo `file://` por CORS. Como el requisito es
@@ -136,6 +146,42 @@ El dinero se gana por el precio de cada receta (`recipes.js`); la
 experiencia por el campo `xp` de cada receta. Subir de nivel desbloquea
 recetas de mayor `tier` (1 → 2 → 3 → 4, según la dificultad pedida).
 
+## Tests
+
+`recipes.js`, `scoring.js`, `player.js`, `machine.js`, `customers.js`,
+`save.js` e `inventory.js` tienen suite de tests con
+[Vitest](https://vitest.dev) + jsdom (62 tests). Estos 7 archivos cargan
+como `<script>` clásico en el navegador (sin cambios), pero además exponen
+un `module.exports` guardado (`if (typeof module !== 'undefined') ...`) solo
+para que los tests puedan importarlos en Node — no afecta la carga real del
+juego.
+
+```bash
+npm install   # una vez
+npm test      # corre toda la suite
+```
+
+`game.js` y `ui.js` no tienen tests unitarios propios — están acoplados al
+DOM/otros motores (audio, UI) a propósito, y se verifican jugando (ver
+`docs/qa/qa-plan-maxi-barista-2026-07-29.md` para el detalle de qué se
+prueba manual vs. automático, y por qué).
+
+## Publicar en la página web (`paginaweb`)
+
+Este repo **no se sincroniza solo** con `paginaweb/CoffeeShop/` (el sitio en
+vivo). Para publicar cambios:
+
+1. Copiar los archivos del juego (NO la lista de "solo en este repo" de
+   arriba) a `paginaweb/CoffeeShop/`.
+2. Si se tocó `leaderboard.js` o algo de Supabase, correr la migración/Edge
+   Function correspondiente de nuevo.
+3. Confirmar en el navegador que `paginaweb/CoffeeShop/index.html` carga sin
+   errores antes de hacer commit.
+4. `git add` + `commit` + `push` **dentro del repo `paginaweb`** (Vercel
+   redespliega automáticamente al hacer push) — esto afecta el sitio en
+   vivo, así que se confirma explícitamente cada vez, no es un paso
+   automático.
+
 ## Estado actual vs. futuras versiones
 
 Implementado y jugable hoy: las 16 bebidas de la tabla de referencia, 3
@@ -172,5 +218,11 @@ todavía:
   ordenados y `INGREDIENTS` ya trae nombres — es contenido, no arquitectura.
 - **Español/inglés** → todos los textos visibles están centralizados en
   `ui.js` y `recipes.js`, así que agregar un diccionario bilingüe es mecánico.
-- **Responsive** → `game.css`/`style.css` ya incluyen breakpoints base;
-  falta pulir tablet/móvil a fondo (hoy usable pero apretado en pantallas chicas).
+- **Responsive** → mejorado: en modo compacto (`<700px` de ancho) las 3
+  estaciones son un carrusel horizontal (una tarjeta a la vez, como la fila
+  de clientes) en vez de apiladas, y los botones del HUD tienen mínimo
+  táctil de 44px. En un celular común (375×812) el auto-escalado de
+  pantalla bajó de 0.67 a 0.87 — sigue sin llegar a escala 1.0 exacta
+  porque el HUD (`flex-wrap`) todavía envuelve a varias líneas en ese
+  ancho; reorganizar qué se muestra ahí en compacto es el siguiente paso
+  pendiente.

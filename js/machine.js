@@ -72,3 +72,9 @@ class EspressoMachine {
     this.procesoActivo = null;
   }
 }
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { EspressoMachine };
+}

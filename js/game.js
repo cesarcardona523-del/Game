@@ -249,7 +249,7 @@ class Game {
     const cliente = estacion.cliente;
     const segundos = (performance.now() - estacion.inicioPreparacionMs) / 1000;
 
-    if (this._pasosCoinciden(estacion.capas, cliente.receta.pasos)) {
+    if (pasosCoinciden(estacion.capas, cliente.receta.pasos)) {
       this._alServirCorrecto(cliente, segundos, idEstacion);
     } else {
       this._alServirIncorrecto(cliente, estacion.capas, idEstacion);
@@ -268,55 +268,38 @@ class Game {
     this.save.guardar(this.player);
   }
 
-  _pasosCoinciden(preparados, esperados) {
-    if (preparados.length !== esperados.length) return false;
-    return preparados.every((id, i) => id === esperados[i]);
-  }
-
+  // Las fórmulas de puntaje/reputación viven en scoring.js (puras, sin DOM,
+  // testeadas ahí) — este método solo aplica los deltas a player/ui/audio.
   _alServirCorrecto(cliente, segundos, idEstacion) {
-    const UMBRAL_PERFECTO_S = 10;
-    const UMBRAL_RAPIDO_S = 16;
+    const r = calcularServirCorrecto(cliente, segundos);
+    if (r.clienteContento) this.player.clientesFelices++;
 
-    let puntos = 100;
-    let etiqueta = '¡Correcto! +100';
-    let esPerfecto = false;
-
-    if (segundos <= UMBRAL_PERFECTO_S) { puntos = 150; etiqueta = '¡Perfecto! +150'; esPerfecto = true; }
-    else if (segundos <= UMBRAL_RAPIDO_S) { puntos += 50; etiqueta = '¡Muy rápido! +150'; }
-
-    const clienteContento = cliente.fraccionPaciencia() > 0.5;
-    if (clienteContento) { puntos += 20; this.player.clientesFelices++; }
-
-    this.player.ganarPuntos(puntos);
-    this.player.ganarDinero(cliente.receta.precio + (esPerfecto ? 1 : 0));
-    this.player.cambiarReputacion(clienteContento ? 3 : 1);
+    this.player.ganarPuntos(r.puntos);
+    this.player.ganarDinero(r.dinero);
+    this.player.cambiarReputacion(r.deltaReputacion);
     this.player.pedidosAtendidos++;
 
-    this.ui.mostrarFlotante(etiqueta, 'positivo', idEstacion);
+    this.ui.mostrarFlotante(r.etiqueta, 'positivo', idEstacion);
     this.ui.mostrarFlotante('+$' + cliente.receta.precio.toFixed(2), 'dinero', idEstacion);
-    if (esPerfecto) this.ui.mostrarEstrellas(idEstacion);
+    if (r.esPerfecto) this.ui.mostrarEstrellas(idEstacion, 5);
+    else if (r.esRapido) this.ui.mostrarEstrellas(idEstacion, 3);
 
     // Maxi festeja cada pedido bien servido, no solo en la pantalla de Home.
-    const textoFesteje = esPerfecto ? `¡Perfecto, ${cliente.nombre}!` : `¡${cliente.nombre} contento!`;
+    const textoFesteje = r.esPerfecto ? `¡Perfecto, ${cliente.nombre}!` : `¡${cliente.nombre} contento!`;
     this.ui.mostrarCelebracionMaxi(textoFesteje);
 
     this.audio.caja();
-    if (clienteContento) this.audio.clienteFeliz(); else this.audio.correcto();
+    if (r.clienteContento) this.audio.clienteFeliz(); else this.audio.correcto();
   }
 
   _alServirIncorrecto(cliente, capasPreparadas, idEstacion) {
-    const esperados = cliente.receta.pasos;
-    const largoMax = Math.max(capasPreparadas.length, esperados.length);
-    let ingredientesMal = 0;
-    for (let i = 0; i < largoMax; i++) {
-      if (capasPreparadas[i] !== esperados[i]) ingredientesMal++;
-    }
-    const total = 50 + ingredientesMal * 30;
+    const r = calcularServirIncorrecto(capasPreparadas, cliente.receta.pasos);
 
-    this.player.ganarPuntos(-total);
-    this.player.cambiarReputacion(-(8 + ingredientesMal * 2));
+    this.player.ganarPuntos(-r.total);
+    this.player.cambiarReputacion(r.deltaReputacion);
 
-    this.ui.mostrarFlotante(`Bebida incorrecta -${total}`, 'negativo', idEstacion);
+    this.ui.mostrarFlotante(`Bebida incorrecta -${r.total}`, 'negativo', idEstacion);
+    this.ui.destellarError(idEstacion);
     this.audio.clienteEnojado();
   }
 
@@ -351,6 +334,7 @@ class Game {
       this.ui.actualizarEstacion(estacion, estacion.id === this.estacionEnfocadaId);
       if (estacion.id === this.estacionEnfocadaId) this.ui.renderProgresoMaquinaEnfocada(estacion);
       this.ui.mostrarFlotante(`${cliente.nombre} se fue -100`, 'negativo', estacion.id);
+      this.ui.destellarError(estacion.id);
     }
 
     this.audio.clienteEnojado();

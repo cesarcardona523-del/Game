@@ -41,3 +41,9 @@ class SaveManager {
     try { localStorage.removeItem(this.clave); } catch (err) { /* noop */ }
   }
 }
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { SaveManager };
+}

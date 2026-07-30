@@ -145,3 +145,9 @@ class CustomerManager {
     return this.cola.find((c) => c.id === idCliente) || null;
   }
 }
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Customer, CustomerManager, tierParaNivel, pacienciaParaNivel, PACIENCIA_MS_POR_NIVEL };
+}

@@ -12,6 +12,30 @@
  * ─────────────────────────────────────────────────────────────────────────
  */
 
+/**
+ * Pool genérico de elementos DOM reciclados — evita crear/destruir un
+ * <span> nuevo en cada VFX (texto flotante, estrella, vapor). El listener de
+ * `animationend` que devuelve el elemento al pool se registra UNA sola vez
+ * en la fábrica (factory), no en cada adquisición, para no ir acumulando
+ * listeners sobre el mismo nodo a medida que se reutiliza.
+ */
+class ElementPool {
+  constructor() {
+    this._libres = [];
+  }
+
+  /** Reutiliza un elemento libre, o crea uno nuevo con `factory()` si no hay. */
+  adquirir(factory) {
+    return this._libres.pop() || factory();
+  }
+
+  /** Devuelve un elemento al pool, quitándolo del DOM. */
+  liberar(el) {
+    if (el.parentNode) el.parentNode.removeChild(el);
+    this._libres.push(el);
+  }
+}
+
 class UIController {
   constructor() {
     this.el = {
@@ -35,6 +59,7 @@ class UIController {
       hudNivel: document.getElementById('hud-nivel'),
       hudNivelBarra: document.getElementById('hud-nivel-barra'),
       hudDinero: document.getElementById('hud-dinero'),
+      hudReputacion: document.getElementById('hud-reputacion'),
       hudFelices: document.getElementById('hud-felices'),
       hudTiempo: document.getElementById('hud-tiempo'),
       hudTiempoWrap: document.getElementById('hud-tiempo-wrap'),
@@ -43,6 +68,15 @@ class UIController {
       celebracionMaxi: document.getElementById('celebracion-maxi'),
       celebracionMaxiTexto: document.getElementById('celebracion-maxi-texto'),
     };
+    // Valores previos del HUD — para animar un "tick" solo cuando dinero o
+    // reputación realmente cambian entre un renderHUD() y el siguiente.
+    this._ultimoDinero = null;
+    this._ultimaReputacion = null;
+
+    // Pools de elementos VFX reciclados (texto flotante, estrellas, vapor).
+    this._poolFlotantes = new ElementPool();
+    this._poolEstrellas = new ElementPool();
+    this._poolVapor = new ElementPool();
   }
 
   /**
@@ -296,27 +330,38 @@ class UIController {
   mostrarFlotante(texto, tipo, idEstacion) {
     const card = this.el.estaciones.querySelector(`.estacion-card[data-id="${idEstacion}"]`) || this.el.flotantes;
     const rectRelativo = card === this.el.flotantes ? { left: 50, top: 50 } : this._posicionRelativa(card);
-    const span = document.createElement('span');
-    span.className = `flotante flotante--${tipo}`;
+    const span = this._poolFlotantes.adquirir(() => {
+      const el = document.createElement('span');
+      el.addEventListener('animationend', () => this._poolFlotantes.liberar(el));
+      return el;
+    });
+    span.className = '';
     span.textContent = texto;
     span.style.left = rectRelativo.left + '%';
     span.style.top = rectRelativo.top + '%';
     this.el.flotantes.appendChild(span);
-    span.addEventListener('animationend', () => span.remove());
+    void span.offsetWidth; // fuerza reflow para que la animación reinicie en un nodo reciclado
+    span.className = `flotante flotante--${tipo}`;
   }
 
-  mostrarEstrellas(idEstacion) {
+  /** cantidad: 5 para "¡Perfecto!", 3 para "¡Muy rápido!" — refuerza visualmente los 3 tiers de puntaje. */
+  mostrarEstrellas(idEstacion, cantidad = 5) {
     const card = this.el.estaciones.querySelector(`.estacion-card[data-id="${idEstacion}"]`);
     const pos = card ? this._posicionRelativa(card) : { left: 50, top: 40 };
-    for (let i = 0; i < 5; i++) {
-      const s = document.createElement('span');
-      s.className = 'estrella-flotante';
-      s.textContent = '★';
+    for (let i = 0; i < cantidad; i++) {
+      const s = this._poolEstrellas.adquirir(() => {
+        const el = document.createElement('span');
+        el.textContent = '★';
+        el.addEventListener('animationend', () => this._poolEstrellas.liberar(el));
+        return el;
+      });
+      s.className = '';
       s.style.left = (pos.left + (Math.random() * 14 - 7)) + '%';
       s.style.top = (pos.top + (Math.random() * 8 - 4)) + '%';
       s.style.animationDelay = (Math.random() * 0.15) + 's';
       this.el.flotantes.appendChild(s);
-      s.addEventListener('animationend', () => s.remove());
+      void s.offsetWidth; // fuerza reflow para que la animación reinicie en un nodo reciclado
+      s.className = 'estrella-flotante';
     }
   }
 
@@ -329,15 +374,37 @@ class UIController {
     return { left: Math.min(95, Math.max(5, left)), top: Math.min(95, Math.max(5, top)) };
   }
 
-  /** Humo/vapor decorativo sobre la máquina mientras corre un proceso relacionado a leche/vapor. */
+  /**
+   * Humo/vapor decorativo sobre la máquina mientras corre un proceso.
+   * Variante por tipo: espresso (oscuro), fría (neblina que cae, leche_fria
+   * no debería "humear" hacia arriba como un líquido caliente), el resto
+   * (agua/leche caliente, espumado) usa el vapor blanco por defecto.
+   */
   emitirVapor(idProceso) {
-    if (idProceso !== 'leche_espumada' && idProceso !== 'espuma_de_leche') return;
     const btn = this.el.maquinaBotones.querySelector(`[data-id="${idProceso}"]`);
     if (!btn) return;
-    const nube = document.createElement('span');
-    nube.className = 'vapor-nube';
+    const variante = idProceso === 'espresso' ? 'espresso'
+      : idProceso === 'leche_fria' ? 'fria'
+      : 'vapor';
+    const nube = this._poolVapor.adquirir(() => {
+      const el = document.createElement('span');
+      el.addEventListener('animationend', () => this._poolVapor.liberar(el));
+      return el;
+    });
+    nube.className = '';
     btn.appendChild(nube);
-    nube.addEventListener('animationend', () => nube.remove());
+    void nube.offsetWidth; // fuerza reflow para que la animación reinicie en un nodo reciclado
+    nube.className = `vapor-nube vapor-nube--${variante}`;
+  }
+
+  /** Breve destello rojo en el borde de la tarjeta — bebida incorrecta o cliente perdido. */
+  destellarError(idEstacion) {
+    const card = this.el.estaciones.querySelector(`.estacion-card[data-id="${idEstacion}"]`);
+    if (!card) return;
+    card.classList.remove('estacion-card--error');
+    void card.offsetWidth; // fuerza reflow para poder re-disparar la animación si ya estaba corriendo
+    card.classList.add('estacion-card--error');
+    card.addEventListener('animationend', () => card.classList.remove('estacion-card--error'), { once: true });
   }
 
   // ── HUD ──
@@ -345,7 +412,25 @@ class UIController {
     this.el.hudNivel.textContent = player.nivel;
     this.el.hudNivelBarra.style.width = (player.progresoNivel() * 100).toFixed(1) + '%';
     this.el.hudDinero.textContent = '$' + player.dinero.toFixed(2);
+    this.el.hudReputacion.textContent = Math.round(player.reputacion) + '%';
     this.el.hudFelices.textContent = player.clientesFelices;
+
+    if (this._ultimoDinero !== null && player.dinero !== this._ultimoDinero) {
+      this._animarTick(this.el.hudDinero, player.dinero > this._ultimoDinero);
+    }
+    if (this._ultimaReputacion !== null && player.reputacion !== this._ultimaReputacion) {
+      this._animarTick(this.el.hudReputacion, player.reputacion > this._ultimaReputacion);
+    }
+    this._ultimoDinero = player.dinero;
+    this._ultimaReputacion = player.reputacion;
+  }
+
+  /** Breve "tick" (pop + color) en un valor del HUD cuando cambia — verde si sube, rojo si baja. */
+  _animarTick(el, subida) {
+    el.classList.remove('hud-tick-sube', 'hud-tick-baja');
+    void el.offsetWidth; // fuerza reflow para poder re-disparar si ya estaba animando
+    el.classList.add(subida ? 'hud-tick-sube' : 'hud-tick-baja');
+    el.addEventListener('animationend', () => el.classList.remove('hud-tick-sube', 'hud-tick-baja'), { once: true });
   }
 
   /**

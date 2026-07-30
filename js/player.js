@@ -93,3 +93,9 @@ class Player {
     return p;
   }
 }
+
+// Expuesto para tests (Node/CommonJS). No afecta la carga como <script> en el
+// navegador, donde `module` no existe.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Player, CLIENTES_POR_NIVEL, NIVEL_MAXIMO };
+}

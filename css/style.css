@@ -320,9 +320,9 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   background: rgba(255, 255, 255, .06);
   border: 1px solid rgba(237, 224, 200, .16);
   color: var(--cs-beige);
-  width: 34px; height: 34px;
+  width: 44px; height: 44px; /* mínimo táctil recomendado (WCAG 2.5.5 / 44px) — antes 34px */
   border-radius: 50%;
-  font-size: 15px;
+  font-size: 17px;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 0 rgba(0, 0, 0, .25);
   transition: background .2s, transform .12s;

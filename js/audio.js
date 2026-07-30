@@ -46,6 +46,18 @@ class AudioEngine {
     g.exponentialRampToValueAtTime(0.0001, tInicio + attack + release);
   }
 
+  /**
+   * Pequeña variación aleatoria de tono (±1.5% por defecto) para que un mismo
+   * efecto no suene idéntico nota por nota cada vez que se repite en una
+   * sesión larga — no toca las relaciones armónicas entre notas de un mismo
+   * efecto (ej. el arpegio de clienteFeliz sigue siendo C5-E5-G5), solo el
+   * tono base de esa reproducción particular.
+   */
+  _variar(frecuencia, rango) {
+    const r = rango === undefined ? 0.015 : rango;
+    return frecuencia * (1 + (Math.random() * 2 - 1) * r);
+  }
+
   /** Tono simple (usado como base de varios efectos). */
   _tono(frecuencia, tipo, duracion, pico, delay) {
     if (this.silenciado) return;
@@ -97,45 +109,45 @@ class AudioEngine {
 
   /** Servir leche / verter líquido: burbujeo corto. */
   leche() {
-    this._tono(300, 'sine', 0.25, 0.12, 0);
-    this._tono(500, 'sine', 0.2, 0.08, 0.08);
+    this._tono(this._variar(300), 'sine', 0.25, 0.12, 0);
+    this._tono(this._variar(500), 'sine', 0.2, 0.08, 0.08);
   }
 
   /** Caja registradora al cobrar una bebida correcta. */
   caja() {
-    this._tono(1400, 'square', 0.08, 0.1, 0);
-    this._tono(1800, 'square', 0.12, 0.1, 0.09);
+    this._tono(this._variar(1400), 'square', 0.08, 0.1, 0);
+    this._tono(this._variar(1800), 'square', 0.12, 0.1, 0.09);
   }
 
   /** Cliente satisfecho: arpegio ascendente. */
   clienteFeliz() {
-    [523, 659, 784].forEach((f, i) => this._tono(f, 'triangle', 0.18, 0.12, i * 0.09));
+    [523, 659, 784].forEach((f, i) => this._tono(this._variar(f), 'triangle', 0.18, 0.12, i * 0.09));
   }
 
   /** Cliente molesto / bebida incorrecta: dos tonos descendentes graves. */
   clienteEnojado() {
-    this._tono(220, 'sawtooth', 0.25, 0.12, 0);
-    this._tono(160, 'sawtooth', 0.3, 0.12, 0.18);
+    this._tono(this._variar(220), 'sawtooth', 0.25, 0.12, 0);
+    this._tono(this._variar(160), 'sawtooth', 0.3, 0.12, 0.18);
   }
 
   /** Campanilla de la puerta al entrar un cliente nuevo. */
   campana() {
-    this._tono(1600, 'sine', 0.35, 0.1, 0);
-    this._tono(2000, 'sine', 0.3, 0.06, 0.05);
+    this._tono(this._variar(1600), 'sine', 0.35, 0.1, 0);
+    this._tono(this._variar(2000), 'sine', 0.3, 0.06, 0.05);
   }
 
   /** Confirmación de preparación correcta (ping corto y limpio). */
   correcto() {
-    this._tono(900, 'sine', 0.15, 0.14, 0);
+    this._tono(this._variar(900), 'sine', 0.15, 0.14, 0);
   }
 
   /** Error genérico (ingrediente incorrecto, orden equivocado, etc.). */
   error() {
-    this._tono(180, 'square', 0.2, 0.1, 0);
+    this._tono(this._variar(180), 'square', 0.2, 0.1, 0);
   }
 
   /** Subida de nivel: fanfarria corta de 4 notas. */
   subirNivel() {
-    [523, 659, 784, 1046].forEach((f, i) => this._tono(f, 'triangle', 0.2, 0.14, i * 0.1));
+    [523, 659, 784, 1046].forEach((f, i) => this._tono(this._variar(f), 'triangle', 0.2, 0.14, i * 0.1));
   }
 }
