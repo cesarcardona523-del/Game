@@ -1,4 +1,24 @@
-# ☕ Maxi Barista — Juego (Beta)
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:12100E,100:B5652F&height=180&section=header&text=Maxi%20Barista&fontSize=42&fontColor=fff&fontAlignY=38&desc=Simulador%20de%20Barista%20%7C%20Juego%20(Beta)&descAlignY=58&descColor=f4ede3"/>
+
+</div>
+
+<p align="center">
+  <a href="https://cesarcardona-orcin-iota.vercel.app/coffee-app/#/juego">
+    <img src="https://img.shields.io/badge/Sitio-En%20vivo-6F4E37?style=flat&logo=vercel&logoColor=white"/>
+  </a>
+  &nbsp;
+  <a href="https://github.com/cesarcardona523-del/Game">
+    <img src="https://img.shields.io/badge/GitHub-Repositorio-181717?style=flat&logo=github&logoColor=white"/>
+  </a>
+  &nbsp;
+  <a href="mailto:cesarcardona523@gmail.com">
+    <img src="https://img.shields.io/badge/Email-Escribir-1A56E8?style=flat&logo=gmail&logoColor=white"/>
+  </a>
+</p>
+
+---
 
 > **Repo de trabajo, separado de la página web.** Este repositorio nació
 > como copia independiente de `paginaweb/CoffeeShop/` (extraída el
@@ -15,12 +35,25 @@
 > nuevo la migración/Edge Function de Supabase si cambiaron) y luego
 > publicar desde ese repo. Los repos NO se sincronizan solos.
 
+## ☕ Sobre este proyecto
+
 Simulador de barista en HTML5 + CSS3 + JavaScript ES6 puro. Sin frameworks,
 sin build step, sin dependencias externas — abre `index.html` directamente
 en el navegador y funciona. Dentro de Coffee App vive incrustado como
 pestaña "Juego" vía `<iframe>` (ver nota arriba).
 
-## Cómo jugar
+```text
+🎮  3 estaciones en paralelo    → atiende varios pedidos a la vez, sin colas
+☕  16 recetas, 4 tiers          → precio calibrado por esfuerzo de máquina
+👥  Clientes con paciencia       → propina extra si sirves rápido y bien
+🔊  Audio 100% sintetizado       → Web Audio API, cero archivos, cero licencias
+🏆  TOP global vía Supabase      → puntaje + nivel, envío opcional de correo
+🧪  62 tests (Vitest + jsdom)    → lógica de puntaje/economía/máquina cubierta
+```
+
+---
+
+## 🚀 Cómo jugar
 
 1. Clientes llegan a la fila (Zona 1) y hacen un pedido. Haz clic en una
    tarjeta para asignarlo a una **estación libre** (Zona 4) — tienes
@@ -43,10 +76,33 @@ pestaña "Juego" vía `<iframe>` (ver nota arriba).
 6. Cuando quieras, dale a **🏁 Finalizar turno** para enviar tu puntaje al
    TOP global (nombre + correo, opcional — puedes omitirlo).
 
-## Arquitectura
+---
+
+## 🛠️ Stack Técnico
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+
+Sin framework, sin bundler, sin paso de build — HTML/CSS/JS puro servido
+tal cual, con `class` de ES6 normal (solo se evita `import`/`export`, ver
+abajo).
+
+**Testing**
+
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![jsdom](https://img.shields.io/badge/jsdom-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+
+**Backend (compartido con el resto del sitio)**
+
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+
+---
+
+## 📁 Arquitectura y Organización
 
 ```
-CoffeeShop/
+Game/
 ├── index.html          Estructura de las 4 zonas + sprite SVG de íconos
 ├── css/
 │   ├── style.css        Reset, paleta, layout general, HUD, modales
@@ -73,7 +129,7 @@ CoffeeShop/
 └── tests/                  Suite Vitest — ver sección "Tests" abajo
 ```
 
-**Solo en este repo de trabajo, NO se copian a `paginaweb/CoffeeShop/`:**
+**Solo en este repo de trabajo, NO se copian a `CoffeeAPP/public/game/`:**
 `package.json`, `package-lock.json`, `vitest.config.js`, `tests/`, `docs/`,
 `.gitignore`, `skills-lock.json`, `.claude/` — son herramientas de desarrollo
 (tests, skills de Claude Code), no parte del juego que se sirve al jugador.
@@ -102,7 +158,7 @@ dependencias, cero licencias que revisar, funciona offline.
 ingredientes + máquina) son un sprite `<svg><symbol>` inline en
 `index.html`, referenciado con `<use>`.
 
-## Radio de la cafetería (`radio.js`)
+## 📻 Radio de la cafetería (`radio.js`)
 
 Botón 📻 en el header. Por defecto reproduce un **loop ambiental lo-fi
 generado en vivo** (acordes suaves + un leve "hiss" de vinilo, Web Audio
@@ -112,7 +168,7 @@ detecta solos y reproduce una playlist real en su lugar, sin tocar código.
 No pude descargar música de terceros por ti — mismo motivo que las fotos de
 los ingredientes: no puedo verificar la licencia de cada pista.
 
-## TOP global (`leaderboard.js` + `supabase/coffee_shop_puntajes.sql`)
+## 🏆 TOP global (`leaderboard.js` + `supabase/coffee_shop_puntajes.sql`)
 
 Al finalizar un turno, el jugador puede enviar nombre + correo + puntaje al
 TOP. Usa el mismo proyecto Supabase que el resto del sitio, llamando a la
@@ -127,15 +183,15 @@ formulario de suscripción del Comparador de Precios); la LECTURA del TOP
 pasa por una función `SECURITY DEFINER` que solo expone nombre/puntos/nivel
 — el correo nunca es legible desde el cliente, ni siquiera indirectamente.
 
-## Incrustado en Coffee App
+## 🎮 Incrustado en Coffee App
 
-`Coffee.html` tiene una 4ª pestaña "☕ Juego (Beta)" que muestra este juego
-dentro de un `<iframe>` (carga perezosa: el `src` solo se asigna la primera
-vez que se abre esa pestaña). El botón "⛶ Pantalla completa" usa la
-Fullscreen API sobre el contenedor del iframe — el juego se ve a tamaño
-normal por defecto, y solo se expande si el usuario lo pide.
+Coffee App tiene una pestaña "☕ Juego" que muestra este juego dentro de un
+`<iframe>` (carga perezosa: el `src` solo se asigna la primera vez que se
+abre esa pestaña). El botón "⛶ Pantalla completa" usa la Fullscreen API
+sobre el contenedor del iframe — el juego se ve a tamaño normal por
+defecto, y solo se expande si el usuario lo pide.
 
-## Reglas de puntuación implementadas
+## 🎯 Reglas de puntuación implementadas
 
 | Evento | Puntos |
 |---|---|
@@ -147,11 +203,12 @@ normal por defecto, y solo se expande si el usuario lo pide.
 | Cada ingrediente/posición que no coincide con la receta | −30 adicional |
 | Cliente se va sin ser atendido | −100 |
 
-El dinero se gana por el precio de cada receta (`recipes.js`); la
-experiencia por el campo `xp` de cada receta. Subir de nivel desbloquea
-recetas de mayor `tier` (1 → 2 → 3 → 4, según la dificultad pedida).
+El dinero se gana por el precio de cada receta (`recipes.js`), calibrado
+por esfuerzo real de máquina (no por "menú de café real"). Subir de nivel
+desbloquea recetas de mayor `tier` (1 → 2 → 3 → 4, según la dificultad
+pedida).
 
-## Tests
+## 🧪 Tests
 
 `recipes.js`, `scoring.js`, `player.js`, `machine.js`, `customers.js`,
 `save.js` e `inventory.js` tienen suite de tests con
@@ -171,13 +228,25 @@ DOM/otros motores (audio, UI) a propósito, y se verifican jugando (ver
 `docs/qa/qa-plan-maxi-barista-2026-07-29.md` para el detalle de qué se
 prueba manual vs. automático, y por qué).
 
-## Publicar en la página web
+## 🚢 Publicar en la página web
 
 **Desde 2026-08-17 el destino cambió.** La Coffee App se reconstruyó como
 SPA React/Vite en el repo hermano `CoffeeAPP` (fuente de verdad de todo lo
 que NO es el juego); `paginaweb/CoffeeShop/` quedó obsoleto y se respaldó en
 `paginaweb/Backup/coffee-legacy-2026-08-17/`. Este repo (`Game`) **no se
-sincroniza solo** con `CoffeeAPP/public/game/`. Para publicar cambios:
+sincroniza solo** con `CoffeeAPP/public/game/`.
+
+```text
+Game/ (este repo)
+        ↓  copiar archivos del juego
+CoffeeAPP/public/game/
+        ↓  npm run dev — probar en /juego
+        ↓  npm run deploy:web
+paginaweb/coffee-app/game/ (sincronizado)
+        ↓  verificar en el navegador
+        ↓  revisar git diff en paginaweb
+Commit + push manual en paginaweb (Vercel redespliega)
+```
 
 1. Copiar los archivos del juego (NO la lista de "solo en este repo" de
    arriba) a `CoffeeAPP/public/game/`.
@@ -195,7 +264,7 @@ sincroniza solo** con `CoffeeAPP/public/game/`. Para publicar cambios:
 
 Detalle completo del flujo y del backup: `CoffeeAPP/DEPLOYMENT.md`.
 
-## Estado actual vs. futuras versiones
+## 🔮 Estado actual vs. futuras versiones
 
 Implementado y jugable hoy: las 16 bebidas de la tabla de referencia, 3
 estaciones de preparación en paralelo, máquina de espresso opcional con
@@ -239,3 +308,25 @@ todavía:
   porque el HUD (`flex-wrap`) todavía envuelve a varias líneas en ese
   ancho; reorganizar qué se muestra ahí en compacto es el siguiente paso
   pendiente.
+
+---
+
+## 📬 Contacto
+
+<p align="center">
+  <a href="https://linkedin.com/in/cacm523">
+    <img src="https://img.shields.io/badge/LinkedIn-César%20Cardona-0A66C2?style=for-the-badge&logo=linkedin"/>
+  </a>
+  &nbsp;
+  <a href="mailto:cesarcardona523@gmail.com">
+    <img src="https://img.shields.io/badge/Email-cesarcardona523%40gmail.com-1A56E8?style=for-the-badge&logo=gmail&logoColor=white"/>
+  </a>
+  &nbsp;
+  <a href="https://cesarcardona-orcin-iota.vercel.app/coffee-app/#/juego">
+    <img src="https://img.shields.io/badge/Maxi%20Barista-Jugar-6F4E37?style=for-the-badge&logo=vercel&logoColor=white"/>
+  </a>
+</p>
+
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:B5652F,100:12100E&height=100&section=footer"/>
+</div>
