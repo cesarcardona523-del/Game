@@ -171,21 +171,29 @@ DOM/otros motores (audio, UI) a propósito, y se verifican jugando (ver
 `docs/qa/qa-plan-maxi-barista-2026-07-29.md` para el detalle de qué se
 prueba manual vs. automático, y por qué).
 
-## Publicar en la página web (`paginaweb`)
+## Publicar en la página web
 
-Este repo **no se sincroniza solo** con `paginaweb/CoffeeShop/` (el sitio en
-vivo). Para publicar cambios:
+**Desde 2026-08-17 el destino cambió.** La Coffee App se reconstruyó como
+SPA React/Vite en el repo hermano `CoffeeAPP` (fuente de verdad de todo lo
+que NO es el juego); `paginaweb/CoffeeShop/` quedó obsoleto y se respaldó en
+`paginaweb/Backup/coffee-legacy-2026-08-17/`. Este repo (`Game`) **no se
+sincroniza solo** con `CoffeeAPP/public/game/`. Para publicar cambios:
 
 1. Copiar los archivos del juego (NO la lista de "solo en este repo" de
-   arriba) a `paginaweb/CoffeeShop/`.
+   arriba) a `CoffeeAPP/public/game/`.
 2. Si se tocó `leaderboard.js` o algo de Supabase, correr la migración/Edge
    Function correspondiente de nuevo.
-3. Confirmar en el navegador que `paginaweb/CoffeeShop/index.html` carga sin
-   errores antes de hacer commit.
-4. `git add` + `commit` + `push` **dentro del repo `paginaweb`** (Vercel
-   redespliega automáticamente al hacer push) — esto afecta el sitio en
-   vivo, así que se confirma explícitamente cada vez, no es un paso
+3. Probar en `CoffeeAPP` con `npm run dev` (ruta `/juego`) antes de publicar.
+4. `npm run deploy:web` **dentro de `CoffeeAPP`** — hace el build con el
+   `base` correcto y sincroniza `paginaweb/coffee-app/` (nunca toca
+   `paginaweb/Backup/`). No hace commit ni push por sí solo.
+5. Verificar `paginaweb/coffee-app/` en el navegador, revisar el `git diff`
+   en `paginaweb`, y recién ahí `git add` + `commit` + `push` **dentro del
+   repo `paginaweb`** (Vercel redespliega automáticamente) — esto afecta el
+   sitio en vivo, se confirma explícitamente cada vez, no es un paso
    automático.
+
+Detalle completo del flujo y del backup: `CoffeeAPP/DEPLOYMENT.md`.
 
 ## Estado actual vs. futuras versiones
 

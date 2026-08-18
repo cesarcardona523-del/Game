@@ -16,16 +16,28 @@ directory with any static file server (e.g. `python3 -m http.server`).
 
 ## Repo relationship: this is a working copy, not the live site
 
-This repo is a standalone copy of `paginaweb/CoffeeShop/` (a sibling repo,
-the actual production website), extracted so the game can be iterated on
-without touching the live site. **The two repos do not sync automatically.**
-To publish a change: copy the game files (everything except `package.json`,
-`package-lock.json`, `vitest.config.js`, `tests/`, `docs/`, `.gitignore`,
-`skills-lock.json`, `.claude/` — those are dev-only) into
-`paginaweb/CoffeeShop/`, then commit and push *inside the `paginaweb` repo*
-(Vercel auto-deploys on push to that remote). Never push there without the
-user's explicit go-ahead — it's a production site. See the README's
-"Publicar en la página web" section for the full checklist.
+This repo is a standalone copy of the game, extracted so it can be iterated
+on without touching the live site. **It does not sync automatically** with
+where it's actually published. As of 2026-08-17 the publish chain is:
+
+```
+Game/ (this repo) → copy → CoffeeAPP/public/game/ → `npm run deploy:web`
+    (from CoffeeAPP) → paginaweb/coffee-app/game/ → commit+push in paginaweb
+    (Vercel auto-deploys)
+```
+
+`CoffeeAPP` is a sibling repo (React/Vite SPA, the "Coffee App" wrapper —
+methods/recipes/game tabs) and is the source of truth for everything in it
+*except* the game itself, which stays authored here. The old path
+(`paginaweb/CoffeeShop/`) is retired — it was backed up to
+`paginaweb/Backup/coffee-legacy-2026-08-17/` when Coffee App was rebuilt as
+a SPA. Copy game files to `CoffeeAPP/public/game/` (excluding
+`package.json`, `package-lock.json`, `vitest.config.js`, `tests/`, `docs/`,
+`.gitignore`, `skills-lock.json`, `.claude/` — those are dev-only), never to
+the old path. Never push in `paginaweb` (or run `deploy:web` in `CoffeeAPP`)
+without the user's explicit go-ahead — it's a production site. See the
+README's "Publicar en la página web" section and `CoffeeAPP/DEPLOYMENT.md`
+for the full checklist.
 
 ## Architecture
 
