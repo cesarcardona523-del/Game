@@ -1,19 +1,24 @@
 # ☕ Maxi Barista — Juego (Beta)
 
-> **Repo de trabajo, separado de la página web.** Este repositorio es una
-> copia independiente de `paginaweb/CoffeeShop/` (extraída el 2026-07-29)
-> para iterar el juego sin tocar el sitio en vivo. El sitio principal
-> sigue con su propia copia intacta en `paginaweb/CoffeeShop/`, incrustada
-> en `Coffee.html` vía `<iframe>` — cuando el juego esté listo acá, hay que
-> copiar los archivos actualizados de vuelta a esa carpeta (y correr de
-> nuevo la migración/Edge Function de Supabase si cambiaron) para que se
-> vea reflejado en la página web real. Los dos repos NO se sincronizan
-> solos.
+> **Repo de trabajo, separado de la página web.** Este repositorio nació
+> como copia independiente de `paginaweb/CoffeeShop/` (extraída el
+> 2026-07-29) para iterar el juego sin tocar el sitio en vivo.
+>
+> **Actualizado 2026-08-17:** Coffee App fue reconstruida como SPA
+> React/Vite en el repo hermano `CoffeeAPP`. La copia "en vivo" del juego
+> ya no está en `paginaweb/CoffeeShop/` (esa carpeta se retiró y quedó
+> respaldada en `paginaweb/Backup/coffee-legacy-2026-08-17/CoffeeShop/`) —
+> ahora vive en `CoffeeAPP/public/game/`, y se publica dentro de
+> `paginaweb/coffee-app/game/` vía `npm run deploy:web` (ver
+> `CoffeeAPP/DEPLOYMENT.md`). Cuando el juego esté listo acá, hay que
+> copiar los archivos actualizados a `CoffeeAPP/public/game/` (y correr de
+> nuevo la migración/Edge Function de Supabase si cambiaron) y luego
+> publicar desde ese repo. Los repos NO se sincronizan solos.
 
 Simulador de barista en HTML5 + CSS3 + JavaScript ES6 puro. Sin frameworks,
 sin build step, sin dependencias externas — abre `index.html` directamente
-en el navegador y funciona. En `paginaweb` también vive incrustado como
-pestaña dentro de Coffee App vía `<iframe>` (ver nota arriba).
+en el navegador y funciona. Dentro de Coffee App vive incrustado como
+pestaña "Juego" vía `<iframe>` (ver nota arriba).
 
 ## Cómo jugar
 
